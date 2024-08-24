@@ -18,7 +18,7 @@ This Flask-based API generates customizable QR codes with various styles, colors
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/qrcode-generator-api.git
+   git clone https://github.com/PrathameshBelvalkar/Qr-Generator.git
    cd qrcode-generator-api
    ```
 
@@ -26,7 +26,7 @@ This Flask-based API generates customizable QR codes with various styles, colors
 
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate
    ```
 
 3. **Install the dependencies:**
@@ -41,7 +41,7 @@ This Flask-based API generates customizable QR codes with various styles, colors
    python app.py
    ```
 
-   The application will be accessible at `http://127.0.0.1:5000/`.
+   The application will be accessible at `http://127.0.0.1:5000/` or `http://localhost:5000/`.
 
 ## API Endpoints
 
@@ -71,7 +71,6 @@ Generates a customizable QR code with various style and color options.
     "logo_scale": 0.2,
     "error_correction_level": "H",
     "quiet_zone": 4,
-    "border": 4,
     "version": 1,
     "style": "classic"
   }
@@ -149,12 +148,4 @@ To start the Flask application, simply run:
 python app.py
 ```
 
-The application will start on `http://127.0.0.1:5000/` by default.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contribution
-
-Feel free to submit issues, fork the repository and send pull requests! Contributions are welcome.
+The application will start on `http://127.0.0.1:5000/` or `http://localhost:5000/` by default.
