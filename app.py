@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_file
 from PIL import Image, ImageDraw, ImageOps
 import qrcode
+import qrcode.image.svg
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import (
     SquareModuleDrawer,
@@ -227,6 +228,36 @@ def generate_qr():
 
     # Return the image as a response
     return send_file(img_io, mimetype=f"image/{image_format.lower()}")
+
+
+@app.route("/generate_qr_hd", methods=["POST"])
+def generate_qr_hd():
+    data = request.json
+
+    # Required fields
+    qr_code_text = data.get("qr_code_text", "")
+    border = int(data.get("border", 1))
+
+    # Create a QR code object
+    qr = qrcode.QRCode(
+        version=5,  # Version 1 for a smaller QR code
+        error_correction=qrcode.constants.ERROR_CORRECT_H,  # High error correction
+        box_size=10,
+        border=border,
+    )
+    qr.add_data(qr_code_text)
+    qr.make(fit=True)
+
+    # Generate QR code in SVG format
+    img = qr.make_image(image_factory=qrcode.image.svg.SvgImage)
+
+    # Save the SVG to a BytesIO object
+    svg_io = BytesIO()
+    img.save(svg_io)
+    svg_io.seek(0)
+
+    # Return the SVG image as a response
+    return send_file(svg_io, mimetype="image/svg+xml")
 
 
 if __name__ == "__main__":
