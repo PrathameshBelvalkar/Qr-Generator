@@ -12,6 +12,7 @@ from qrcode.image.styles.moduledrawers import (
 from qrcode.image.styles.colormasks import SolidFillColorMask
 from io import BytesIO
 import requests
+from xml.etree import ElementTree as ET
 
 app = Flask(__name__)
 
@@ -234,29 +235,43 @@ def generate_qr():
 def generate_qr_hd():
     data = request.json
 
-    # Required fields
     qr_code_text = data.get("qr_code_text", "")
     border = int(data.get("border", 1))
+    background_color = data.get("background_color", "#ffffff")
+    foreground_color = data.get("foreground_color", "#000000")
 
-    # Create a QR code object
+    text_length = len(qr_code_text)
+    if text_length < 50:
+        error_correction = qrcode.constants.ERROR_CORRECT_H
+    elif 50 <= text_length < 150:
+        error_correction = qrcode.constants.ERROR_CORRECT_M
+    else:
+        error_correction = qrcode.constants.ERROR_CORRECT_L
+
     qr = qrcode.QRCode(
-        version=5,  # Version 1 for a smaller QR code
-        error_correction=qrcode.constants.ERROR_CORRECT_H,  # High error correction
+        version=10,
+        error_correction=error_correction,
         box_size=10,
         border=border,
     )
     qr.add_data(qr_code_text)
     qr.make(fit=True)
 
-    # Generate QR code in SVG format
     img = qr.make_image(image_factory=qrcode.image.svg.SvgImage)
+    svg_data = img.to_string()
 
-    # Save the SVG to a BytesIO object
+    root = ET.fromstring(svg_data)
+
+    root.attrib["style"] = (
+        f"background-color:{background_color};fill:{foreground_color};"
+    )
+
+    updated_svg_data = ET.tostring(root, encoding="utf-8").decode("utf-8")
+
     svg_io = BytesIO()
-    img.save(svg_io)
+    svg_io.write(updated_svg_data.encode("utf-8"))
     svg_io.seek(0)
 
-    # Return the SVG image as a response
     return send_file(svg_io, mimetype="image/svg+xml")
 
 
